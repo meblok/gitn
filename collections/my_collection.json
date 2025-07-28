@@ -4,7 +4,7 @@
 		"name": "pruebaqatester",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "26529519",
-		"_collection_link": "https://apis66-6863.postman.co/workspace/todos~60a8c529-db09-4682-83d3-ddd120f1334e/collection/26529519-53adfd70-78d5-4958-b7b9-93118f8c3ec4?action=share&source=collection_link&creator=26529519"
+		"_collection_link": "https://apis66-6863.postman.co/workspace/60a8c529-db09-4682-83d3-ddd120f1334e/collection/26529519-53adfd70-78d5-4958-b7b9-93118f8c3ec4?action=share&source=collection_link&creator=26529519"
 	},
 	"item": [
 		{
@@ -119,6 +119,10 @@
 							"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json'); ",
 							"});",
 							"",
+							"pm.test(`\"Petition returns message: \"The email field is required.\"`), () => {",
+							"    pm.expect( responseData.errors.email).to.eql(\"The email field is required.\")",
+							"}",
+							"",
 							"",
 							"pm.test(\"Ensure that the response object is not empty\", function () {",
 							"    const responseData = pm.response.json();",
@@ -196,7 +200,9 @@
 							"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json'); ",
 							"});",
 							"",
-							"",
+							"pm.test(`\"Petition returns message: \"The password field is required.\"`), () => {",
+							"    pm.expect( responseData.errors.password).to.eql(\"The password field is required.\")",
+							"}",
 							"pm.test(\"Ensure that the response object is not empty\", function () {",
 							"    const responseData = pm.response.json();",
 							"    ",
@@ -659,7 +665,8 @@
 						"clients",
 						"{{mi_id}}"
 					]
-				}
+				},
+				"description": "make the petition according to the documentation and give the correct body in the petition with field \"is_active\" : false"
 			},
 			"response": []
 		},
@@ -672,6 +679,112 @@
 						"exec": [
 							"pm.test(\"Response status code is 204\", function () {",
 							"  pm.response.to.have.status(204);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlApi}}/api/clients/{{mi_id}}",
+					"host": [
+						"{{baseUrlApi}}"
+					],
+					"path": [
+						"api",
+						"clients",
+						"{{mi_id}}"
+					]
+				},
+				"description": "delete prepvious client with {{id}} on the url"
+			},
+			"response": []
+		},
+		{
+			"name": "nuevo-cliente body menos campos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"pm.environment.set(\"mi_id\", response.id);",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.eql(201);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response schema includes required fields\", function () {",
+							"   ",
+							"    ",
+							"    pm.expect(response).to.be.an('object');",
+							"    pm.expect(response).to.have.all.keys('name', 'cuit','email','phone','address','balance','is_active','updated_at','created_at','id');",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"  ",
+							"    ",
+							"    pm.expect(response).to.be.an('object');",
+							"    pm.expect(response.name).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
+							"});",
+							"",
+							"",
+							"",
+							"// Test the response status code and structure",
+							"pm.test(\"Response status code is 201 and body structure is valid\", function () {",
+							"    pm.expect(response).to.be.an('object').that.has.any.keys('id', 'name', 'email');",
+							"});",
+							"",
+							"",
+							"",
+							"// Test ID field properties",
+							"pm.test(\"ID must be a non-empty number\", function () {",
+							"    pm.expect(response.id).to.exist.and.to.be.a('number').and.to.be.greaterThan(0);",
+							"});",
+							"",
+							"// Test Name field properties",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"    pm.expect(response.name).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
 							"});",
 							""
 						],
@@ -690,6 +803,185 @@
 							"type": "string"
 						}
 					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\": \"Juan Pérez\"\n    \n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlApi}}/api/clients",
+					"host": [
+						"{{baseUrlApi}}"
+					],
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "seems to not pass this test because we are not giving the right body , some fields are erased and the api accepts this request.\n\n## Add Client\n\nThis endpoint allows you to create a new client in the system. It accepts client details as input and returns the created client's information along with additional metadata.\n\n### Request\n\n**Method:** POST  \n**URL:** `{{baseUrlApi}}/api/clients`\n\n**Request Body (JSON):**\n\n``` json\n{\n  \"name\": \"string\",       // The name of the client\n  \"cuit\": \"string\",       // The CUIT (tax identification number) of the client\n  \"email\": \"string\",      // The email address of the client\n  \"phone\": \"string\",      // The phone number of the client\n  \"address\": \"string\",    // The address of the client\n  \"balance\": \"string\",    // The balance amount of the client\n  \"is_active\": \"boolean\"  // Status indicating if the client is active\n}\n\n ```\n\n### Response\n\n**Status Code:** 201 Created  \n**Content-Type:** application/json\n\n**Response Body (JSON):**\n\n``` json\n{\n  \"name\": \"string\",       // The name of the client\n  \"cuit\": \"string\",       // The CUIT of the client\n  \"email\": \"string\",      // The email address of the client\n  \"phone\": \"string\",      // The phone number of the client\n  \"address\": \"string\",    // The address of the client\n  \"balance\": \"string\",    // The balance amount of the client\n  \"is_active\": \"boolean\", // Status indicating if the client is active\n  \"updated_at\": \"string\", // Timestamp of when the client was last updated\n  \"created_at\": \"string\", // Timestamp of when the client was created\n  \"id\": \"integer\"         // Unique identifier for the client\n}\n\n ```\n\n### Notes\n\n- Ensure that all required fields are provided in the request body.\n    \n- The response will include the created client's details along with timestamps for creation and last update."
+			},
+			"response": []
+		},
+		{
+			"name": "borrar cliente creado menos campos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 204\", function () {",
+							"  pm.response.to.have.status(204);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlApi}}/api/clients/{{mi_id}}",
+					"host": [
+						"{{baseUrlApi}}"
+					],
+					"path": [
+						"api",
+						"clients",
+						"{{mi_id}}"
+					]
+				},
+				"description": "no body returned , status 204 ok"
+			},
+			"response": []
+		},
+		{
+			"name": "nuevo-cliente body sin campos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"pm.environment.set(\"mi_id\", response.id);",
+							"",
+							"pm.test(\"Response status code is 500\", function () {",
+							"    pm.expect(pm.response.code).to.eql(500);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \n\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlApi}}/api/clients",
+					"host": [
+						"{{baseUrlApi}}"
+					],
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "## Add Client\n\nThis endpoint allows you to create a new client in the system. It accepts client details as input and returns the created client's information along with additional metadata.\n\n### Request\n\n**Method:** POST  \n**URL:** `{{baseUrlApi}}/api/clients`\n\n**Request Body (JSON):**\n\n``` json\n{\n  \"name\": \"string\",       // The name of the client\n  \"cuit\": \"string\",       // The CUIT (tax identification number) of the client\n  \"email\": \"string\",      // The email address of the client\n  \"phone\": \"string\",      // The phone number of the client\n  \"address\": \"string\",    // The address of the client\n  \"balance\": \"string\",    // The balance amount of the client\n  \"is_active\": \"boolean\"  // Status indicating if the client is active\n}\n\n ```\n\n### Response\n\n**Status Code:** 201 Created  \n**Content-Type:** application/json\n\n**Response Body (JSON):**\n\n``` json\n{\n  \"name\": \"string\",       // The name of the client\n  \"cuit\": \"string\",       // The CUIT of the client\n  \"email\": \"string\",      // The email address of the client\n  \"phone\": \"string\",      // The phone number of the client\n  \"address\": \"string\",    // The address of the client\n  \"balance\": \"string\",    // The balance amount of the client\n  \"is_active\": \"boolean\", // Status indicating if the client is active\n  \"updated_at\": \"string\", // Timestamp of when the client was last updated\n  \"created_at\": \"string\", // Timestamp of when the client was created\n  \"id\": \"integer\"         // Unique identifier for the client\n}\n\n ```\n\n### Notes\n\n- Ensure that all required fields are provided in the request body.\n    \n- The response will include the created client's details along with timestamps for creation and last update."
+			},
+			"response": []
+		},
+		{
+			"name": "borrar cliente sin token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"No autenticado.\", function () {",
+							"  pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(`\"No autenticado.\"`), () => {",
+							"    pm.expect( responseData.message).to.eql(\"No autenticado.\")",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
 				},
 				"method": "DELETE",
 				"header": [],
